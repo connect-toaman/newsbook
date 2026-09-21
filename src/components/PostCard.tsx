@@ -8,7 +8,10 @@ export type PostProps = {
   title: string;
   content: string;
   imageUrl?: string | null;
-  author: string;
+  videoUrl?: string | null;
+  authorName: string;
+  category?: string | null;
+  district?: string | null;
   likesCount: number;
   sharesCount: number;
   createdAt: Date;
@@ -144,7 +147,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
             <div className="mt-auto">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="text-sm font-semibold text-navy">By {post.author}</p>
+                  <p className="text-sm font-semibold text-navy">By {post.authorName}</p>
                   <p className="text-xs text-text-secondary mt-0.5">{formattedDate}</p>
                 </div>
               </div>
@@ -218,7 +221,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
         <div className="mt-auto">
            <div className="flex items-center justify-between mb-4">
              <div>
-               <p className="text-xs font-semibold text-navy line-clamp-1">By {post.author}</p>
+               <p className="text-xs font-semibold text-navy line-clamp-1">By {post.authorName}</p>
                <p className="text-[11px] text-text-secondary mt-0.5">{formattedDate}</p>
              </div>
            </div>
