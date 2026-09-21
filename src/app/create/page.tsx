@@ -138,7 +138,7 @@ export default function CreateNews() {
 
   if (success) {
     return (
-      <div className="max-w-2xl mx-auto mt-12 p-8 bg-surface border border-border-subtle rounded-xl text-center shadow-sm">
+      <div className="w-full max-w-7xl mx-auto mt-12 p-8 bg-surface border border-border-subtle rounded-xl text-center shadow-sm">
         <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle2 size={32} />
         </div>
@@ -165,7 +165,7 @@ export default function CreateNews() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto mt-8 mb-20 px-4">
+    <div className="w-full max-w-7xl mx-auto mt-8 mb-20">
       <div className="mb-8 border-b border-border-subtle pb-6">
         <h1 className="font-serif text-3xl font-bold tracking-tight text-navy">
           Submit News Report
@@ -187,32 +187,34 @@ export default function CreateNews() {
         <div className="space-y-5">
           <h3 className="font-bold text-navy uppercase tracking-wide text-sm border-b border-border-subtle pb-2">Basic Information</h3>
           
-          <div>
-            <label htmlFor="author" className="block text-sm font-bold text-navy mb-1.5">Your Name (Reporter Name) *</label>
-            <input
-              type="text"
-              id="author"
-              name="author"
-              required
-              value={formData.author}
-              onChange={handleChange}
-              className="w-full px-4 py-2.5 rounded border border-border-subtle focus:ring-1 focus:ring-navy focus:border-navy bg-white"
-              placeholder="e.g. Rahul Kumar"
-            />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <label htmlFor="author" className="block text-sm font-bold text-navy mb-1.5">Your Name (Reporter Name) *</label>
+              <input
+                type="text"
+                id="author"
+                name="author"
+                required
+                value={formData.author}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 rounded border border-border-subtle focus:ring-1 focus:ring-navy focus:border-navy bg-white"
+                placeholder="e.g. Rahul Kumar"
+              />
+            </div>
 
-          <div>
-            <label htmlFor="title" className="block text-sm font-bold text-navy mb-1.5">Headline / Title *</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              required
-              value={formData.title}
-              onChange={handleChange}
-              className="w-full px-4 py-2.5 rounded border border-border-subtle focus:ring-1 focus:ring-navy focus:border-navy bg-white"
-              placeholder="Enter a clear, descriptive headline"
-            />
+            <div>
+              <label htmlFor="title" className="block text-sm font-bold text-navy mb-1.5">Headline / Title *</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                required
+                value={formData.title}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 rounded border border-border-subtle focus:ring-1 focus:ring-navy focus:border-navy bg-white"
+                placeholder="Enter a clear, descriptive headline"
+              />
+            </div>
           </div>
 
           <div>

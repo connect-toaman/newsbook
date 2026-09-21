@@ -40,7 +40,7 @@ export default async function SearchPage({
   });
 
   return (
-    <div className="max-w-5xl mx-auto mt-8 mb-20 px-4">
+    <div className="w-full max-w-7xl mx-auto mt-8 mb-20 px-4">
       <div className="mb-8 border-b border-border-subtle pb-6">
         <h1 className="font-serif text-3xl font-bold tracking-tight text-navy mb-4">
           Search & Filter

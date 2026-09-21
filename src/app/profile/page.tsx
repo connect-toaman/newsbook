@@ -29,7 +29,7 @@ export default async function Profile() {
   });
 
   return (
-    <div className="w-full max-w-5xl mx-auto mt-8 mb-20 px-4">
+    <div className="w-full max-w-7xl mx-auto mt-8 mb-20 px-4">
       <div className="mb-10 border-b border-border-subtle pb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
           <h1 className="font-serif text-3xl font-bold tracking-tight text-navy">
