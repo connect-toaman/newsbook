@@ -1,22 +1,43 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Send, Image as ImageIcon, Type, User } from "lucide-react";
+import { Upload, Video, AlertCircle, CheckCircle2, Image as ImageIcon, Send } from "lucide-react";
 
-export default function CreatePost() {
+const CATEGORIES = [
+  "Politics", "Crime", "Education", "Business", "Jobs", 
+  "Government", "Health", "Agriculture", "Weather", 
+  "Environment", "Technology", "Sports", "Entertainment", 
+  "Local News", "District News", "Other"
+];
+
+const DISTRICTS = [
+  "Patna", "Muzaffarpur", "Gaya", "Bhagalpur", "Darbhanga",
+  "Purnia", "Arrah", "Begusarai", "Katihar", "Munger",
+  "Chhapra", "Danapur", "Saharsa", "Hajipur", "Sasaram", "Other"
+];
+
+export default function CreateNews() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    imageUrl: "",
-    author: "Citizen Journalist", // default to Citizen Journalist
     category: "",
     district: "",
+    imageUrl: "",
+    videoType: "none",
+    videoUrl: "",
+    author: "Citizen Journalist",
   });
+
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     const auth = localStorage.getItem("userAuth");
@@ -33,34 +54,51 @@ export default function CreatePost() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      if (file.size > 50 * 1024 * 1024) {
+        setError("Video file is too large (max 50MB)");
+        return;
+      }
+      setVideoFile(file);
+      setError("");
+    }
+  };
+
+  const uploadToBlob = async (file: File): Promise<string> => {
+    try {
+      const response = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
+        method: "POST",
+        body: file,
+      });
+      
+      const newBlob = await response.json();
+      if (!response.ok) throw new Error(newBlob.error || "Upload failed");
+      
+      return newBlob.url;
+    } catch (err: any) {
+      throw new Error("Failed to upload video: " + err.message);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
 
     try {
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to publish post");
-      }
-
       let finalVideoUrl = formData.videoUrl;
 
       if (formData.videoType === "upload" && videoFile) {
-        setUploadProgress(10); // Start
+        setUploadProgress(10);
         finalVideoUrl = await uploadToBlob(videoFile);
         setUploadProgress(100);
       }
 
       // We would hit the actual API here with the user's secure JWT cookie
-      // Example: POST /api/posts { ...formData, videoUrl: finalVideoUrl }
       
-      // Simulate success
+      // Simulate success for now
       setTimeout(() => {
         setSuccess(true);
         setIsSubmitting(false);
@@ -90,7 +128,7 @@ export default function CreatePost() {
             View My Submissions
           </button>
           <button 
-            onClick={() => { setSuccess(false); setFormData({ title: "", content: "", category: "", district: "", imageUrl: "", videoType: "none", videoUrl: "" }); setVideoFile(null); }}
+            onClick={() => { setSuccess(false); setFormData(prev => ({ ...prev, title: "", content: "", category: "", district: "", imageUrl: "", videoType: "none", videoUrl: "" })); setVideoFile(null); }}
             className="px-6 py-2.5 bg-navy text-white font-medium rounded hover:bg-slate-800 transition-colors"
           >
             Submit Another
@@ -120,10 +158,11 @@ export default function CreatePost() {
           </div>
         )}
 
+        <div className="space-y-5">
+          <h3 className="font-bold text-navy uppercase tracking-wide text-sm border-b border-border-subtle pb-2">Basic Information</h3>
+          
           <div>
-            <label htmlFor="title" className="block text-sm font-bold text-navy mb-2 uppercase tracking-wide">
-              Headline
-            </label>
+            <label htmlFor="title" className="block text-sm font-bold text-navy mb-1.5">Headline / Title *</label>
             <input
               type="text"
               id="title"
@@ -131,15 +170,13 @@ export default function CreatePost() {
               required
               value={formData.title}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded border border-border-subtle focus:ring-1 focus:ring-navy focus:border-navy transition-colors bg-white font-serif text-lg placeholder:font-sans placeholder:text-sm"
-              placeholder="Enter the main headline..."
+              className="w-full px-4 py-2.5 rounded border border-border-subtle focus:ring-1 focus:ring-navy focus:border-navy bg-white"
+              placeholder="Enter a clear, descriptive headline"
             />
           </div>
 
           <div>
-            <label htmlFor="content" className="block text-sm font-bold text-navy mb-2 uppercase tracking-wide">
-              News Content
-            </label>
+            <label htmlFor="content" className="block text-sm font-bold text-navy mb-1.5">Full News Content *</label>
             <textarea
               id="content"
               name="content"
@@ -147,49 +184,156 @@ export default function CreatePost() {
               rows={8}
               value={formData.content}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded border border-border-subtle focus:ring-1 focus:ring-navy focus:border-navy transition-colors bg-white resize-y leading-relaxed"
-              placeholder="Write the full news story here..."
-            />
-          </div>
-
-          <div>
-            <label htmlFor="imageUrl" className="flex items-center gap-2 text-sm font-bold text-navy mb-2 uppercase tracking-wide">
-              Cover Image URL (Optional)
-            </label>
-            <input
-              type="url"
-              id="imageUrl"
-              name="imageUrl"
-              value={formData.imageUrl}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded border border-border-subtle focus:ring-1 focus:ring-navy focus:border-navy transition-colors bg-white text-sm"
-              placeholder="https://example.com/image.jpg"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="author" className="block text-sm font-bold text-navy mb-2 uppercase tracking-wide">
-              Source / Contributor (Optional)
-            </label>
-            <input
-              type="text"
-              id="author"
-              name="author"
-              value={formData.author}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded border border-border-subtle focus:ring-1 focus:ring-navy focus:border-navy transition-colors bg-white text-sm"
-              placeholder="Citizen Journalist / Admin"
+              className="w-full px-4 py-3 rounded border border-border-subtle focus:ring-1 focus:ring-navy focus:border-navy bg-white"
+              placeholder="Write the full details of the report here..."
             />
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-border-subtle flex justify-end">
+        <div className="space-y-5">
+          <h3 className="font-bold text-navy uppercase tracking-wide text-sm border-b border-border-subtle pb-2">Categorization</h3>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label htmlFor="category" className="block text-sm font-bold text-navy mb-1.5">Category *</label>
+              <select
+                id="category"
+                name="category"
+                required
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 rounded border border-border-subtle focus:ring-1 focus:ring-navy bg-white"
+              >
+                <option value="" disabled>Select a category</option>
+                {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+            </div>
+            
+            <div>
+              <label htmlFor="district" className="block text-sm font-bold text-navy mb-1.5">District (Bihar) *</label>
+              <select
+                id="district"
+                name="district"
+                required
+                value={formData.district}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 rounded border border-border-subtle focus:ring-1 focus:ring-navy bg-white"
+              >
+                <option value="" disabled>Select a district</option>
+                {DISTRICTS.map(dist => <option key={dist} value={dist}>{dist}</option>)}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          <h3 className="font-bold text-navy uppercase tracking-wide text-sm border-b border-border-subtle pb-2">Media Attachments</h3>
+          
+          <div>
+            <label htmlFor="imageUrl" className="block text-sm font-bold text-navy mb-1.5">Featured Image URL (Optional)</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ImageIcon size={18} className="text-slate-400" />
+              </div>
+              <input
+                type="url"
+                id="imageUrl"
+                name="imageUrl"
+                value={formData.imageUrl}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-2.5 rounded border border-border-subtle focus:ring-1 focus:ring-navy bg-white text-sm"
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <label className="block text-sm font-bold text-navy mb-3">Video Attachment (Optional)</label>
+            <div className="flex flex-wrap gap-4 mb-4">
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="radio" name="videoType" value="none" checked={formData.videoType === "none"} onChange={handleChange} className="text-navy focus:ring-navy" />
+                No Video
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="radio" name="videoType" value="url" checked={formData.videoType === "url"} onChange={handleChange} className="text-navy focus:ring-navy" />
+                Video URL (YouTube/External)
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="radio" name="videoType" value="upload" checked={formData.videoType === "upload"} onChange={handleChange} className="text-navy focus:ring-navy" />
+                Upload Local Video
+              </label>
+            </div>
+
+            {formData.videoType === "url" && (
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Video size={18} className="text-slate-400" />
+                </div>
+                <input
+                  type="url"
+                  name="videoUrl"
+                  value={formData.videoUrl}
+                  onChange={handleChange}
+                  className="w-full pl-10 pr-4 py-2.5 rounded border border-border-subtle focus:ring-1 focus:ring-navy bg-white text-sm"
+                  placeholder="https://youtube.com/watch?v=..."
+                />
+              </div>
+            )}
+
+            {formData.videoType === "upload" && (
+              <div className="bg-slate-50 border border-dashed border-slate-300 rounded-lg p-6 text-center">
+                <input 
+                  type="file" 
+                  accept="video/mp4,video/webm,video/ogg" 
+                  className="hidden" 
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                />
+                
+                {videoFile ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <Video className="text-navy mb-2" size={32} />
+                    <p className="font-medium text-sm text-navy">{videoFile.name}</p>
+                    <p className="text-xs text-text-secondary">{(videoFile.size / (1024 * 1024)).toFixed(2)} MB</p>
+                    <button 
+                      type="button" 
+                      onClick={() => setVideoFile(null)}
+                      className="mt-2 text-xs font-bold text-brand-red hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-3">
+                    <Upload className="text-slate-400 mb-1" size={32} />
+                    <div>
+                      <p className="text-sm font-medium text-navy">Click to upload or drag and drop</p>
+                      <p className="text-xs text-text-secondary mt-1">MP4, WebM up to 50MB</p>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="mt-2 px-4 py-2 bg-white border border-border-subtle rounded text-sm font-medium text-navy hover:bg-slate-50 transition-colors"
+                    >
+                      Select File
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="pt-6 border-t border-border-subtle flex items-center justify-between">
+          <p className="text-xs text-text-secondary">
+            By submitting, you confirm this report adheres to our editorial guidelines.
+          </p>
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="flex items-center justify-center gap-2 bg-navy hover:bg-slate-800 text-white px-8 py-3 rounded text-sm font-medium transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled={isSubmitting || (formData.videoType === "upload" && !videoFile)}
+            className="flex items-center gap-2 bg-navy hover:bg-slate-800 text-white px-8 py-3 rounded text-sm font-medium transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? "Submitting..." : "Submit for Review"}
+            {isSubmitting ? (uploadProgress > 0 && uploadProgress < 100 ? "Uploading Video..." : "Submitting...") : "Submit for Review"}
             {!isSubmitting && <Send className="w-4 h-4 ml-1" />}
           </button>
         </div>
