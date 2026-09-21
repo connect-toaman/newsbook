@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { CheckCircle, XCircle, Clock } from "lucide-react";
 import AdminActionButtons from "@/components/AdminActionButtons";
+import AdminNav from "@/components/AdminNav";
 
 export default async function AdminDashboard() {
   const session = await getSession();
@@ -34,6 +35,8 @@ export default async function AdminDashboard() {
           Logged in as Admin: {session.email}
         </div>
       </div>
+
+      <AdminNav />
 
       <div className="space-y-6">
         {pendingPosts.length === 0 ? (
