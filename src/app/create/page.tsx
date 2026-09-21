@@ -28,7 +28,7 @@ export default function CreateNews() {
     imageUrl: "",
     videoType: "none",
     videoUrl: "",
-    author: "Citizen Journalist",
+    author: "",
   });
 
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -116,6 +116,7 @@ export default function CreateNews() {
           content: formData.content,
           imageUrl: finalImageUrl,
           videoUrl: finalVideoUrl,
+          authorName: formData.author,
           category: formData.category,
           district: formData.district,
         })
@@ -153,7 +154,7 @@ export default function CreateNews() {
             View My Submissions
           </button>
           <button 
-            onClick={() => { setSuccess(false); setFormData(prev => ({ ...prev, title: "", content: "", category: "", district: "", imageUrl: "", videoType: "none", videoUrl: "" })); setVideoFile(null); }}
+            onClick={() => { setSuccess(false); setFormData(prev => ({ ...prev, title: "", content: "", category: "", district: "", imageUrl: "", videoType: "none", videoUrl: "", author: "" })); setVideoFile(null); }}
             className="px-6 py-2.5 bg-navy text-white font-medium rounded hover:bg-slate-800 transition-colors"
           >
             Submit Another
@@ -186,6 +187,20 @@ export default function CreateNews() {
         <div className="space-y-5">
           <h3 className="font-bold text-navy uppercase tracking-wide text-sm border-b border-border-subtle pb-2">Basic Information</h3>
           
+          <div>
+            <label htmlFor="author" className="block text-sm font-bold text-navy mb-1.5">Your Name (Reporter Name) *</label>
+            <input
+              type="text"
+              id="author"
+              name="author"
+              required
+              value={formData.author}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 rounded border border-border-subtle focus:ring-1 focus:ring-navy focus:border-navy bg-white"
+              placeholder="e.g. Rahul Kumar"
+            />
+          </div>
+
           <div>
             <label htmlFor="title" className="block text-sm font-bold text-navy mb-1.5">Headline / Title *</label>
             <input

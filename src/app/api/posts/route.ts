@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { title, content, imageUrl, category, district, videoUrl } = body;
+    const { title, content, imageUrl, category, district, videoUrl, authorName } = body;
 
     if (!title || !content) {
       return NextResponse.json(
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
         district: district || null,
         // Enforce the author from the securely validated session
         authorId: session.userId,
-        authorName: session.email,
+        authorName: authorName || 'Citizen Journalist',
         status: session.role === "ADMIN" ? "APPROVED" : "PENDING"
       },
     });
