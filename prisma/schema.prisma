@@ -13,6 +13,13 @@ enum Role {
   ADMIN
 }
 
+enum PostStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -22,17 +29,34 @@ model User {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  posts       Post[]
+  resetTokens ResetToken[]
+}
+
+model ResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model Post {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   title       String
   content     String
   imageUrl    String?
-  category    String?
-  district    String?
-  author      String   @default("Citizen Journalist / Admin")
-  likesCount  Int      @default(0)
-  sharesCount Int      @default(0)
-  createdAt   DateTime @default(now())
+  videoUrl    String?
+  authorId    String?
+  author      User?      @relation(fields: [authorId], references: [id])
+  authorName  String     @default("Citizen Journalist")
+  category    String?    @default("Uncategorized")
+  district    String?    @default("Bihar")
+  status      PostStatus @default(PENDING)
+  likesCount  Int        @default(0)
+  sharesCount Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now()) @updatedAt
 }

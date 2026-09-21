@@ -26,17 +26,25 @@ export default function Login() {
     setError("");
 
     try {
-      // Basic simulation of auth since this is a demo.
-      // In a real app, this would hit /api/auth/login.
-      if (formData.email && formData.password) {
-        localStorage.setItem("userAuth", JSON.stringify({ email: formData.email, role: "CONTRIBUTOR" }));
-        router.push("/profile");
-        router.refresh();
-      } else {
-        throw new Error("Email and password are required.");
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Login failed");
       }
-    } catch (err) {
-      setError("Email or password is incorrect. Please try again.");
+
+      // Sync with localStorage for components that still rely on it temporarily
+      localStorage.setItem("userAuth", JSON.stringify({ email: formData.email, role: data.role }));
+      
+      router.push("/profile");
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message || "Incorrect email or password.");
     } finally {
       setIsSubmitting(false);
     }
@@ -98,7 +106,7 @@ export default function Login() {
               <label htmlFor="password" className="block text-sm font-bold text-navy uppercase tracking-wide">
                 Password
               </label>
-              <Link href="#" className="text-xs font-medium text-text-secondary hover:text-navy transition-colors">
+              <Link href="/forgot-password" className="text-xs font-medium text-text-secondary hover:text-navy transition-colors">
                 Forgot password?
               </Link>
             </div>
@@ -128,7 +136,7 @@ export default function Login() {
           <div className="text-center pt-4">
             <p className="text-sm text-text-secondary">
               Don't have an account?{" "}
-              <Link href="#" className="font-bold text-navy hover:text-brand-red transition-colors">
+              <Link href="/register" className="font-bold text-navy hover:text-brand-red transition-colors">
                 Create an account
               </Link>
             </p>
