@@ -3,6 +3,7 @@ import { Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { Search, UserCircle, Edit, Bookmark } from "lucide-react";
+import Header from "@/components/Header";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -33,58 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${sourceSerif.variable} font-sans bg-background text-text-primary flex flex-col min-h-screen antialiased selection:bg-brand-red selection:text-white`}>
-        {/* Desktop Header */}
-        <header className="sticky top-0 z-50 bg-surface border-b border-border-subtle">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              
-              {/* Left: Brand */}
-              <div className="flex-shrink-0 flex items-center">
-                <Link href="/" className="font-serif text-2xl font-bold tracking-tight text-navy hover:text-brand-red transition-colors duration-200">
-                  Pradeshik News Bihar
-                </Link>
-              </div>
-              
-              {/* Center: Navigation (Desktop) */}
-              <nav className="hidden md:flex space-x-8">
-                <Link href="/" className="text-sm font-medium text-text-primary hover:text-brand-red transition-colors">Latest</Link>
-                <span className="text-sm font-medium text-text-secondary cursor-not-allowed">Bihar</span>
-                <span className="text-sm font-medium text-text-secondary cursor-not-allowed">Districts ▾</span>
-                <span className="text-sm font-medium text-text-secondary cursor-not-allowed">Categories ▾</span>
-              </nav>
-              
-              {/* Right: Actions */}
-              <div className="flex items-center space-x-6">
-                <button className="text-text-secondary hover:text-navy transition-colors hidden sm:block">
-                  <Search className="w-5 h-5" />
-                  <span className="sr-only">Search</span>
-                </button>
-                <Link href="/create" className="text-text-secondary hover:text-navy transition-colors flex items-center gap-1.5" title="Create News">
-                  <Edit className="w-5 h-5" />
-                  <span className="hidden lg:inline text-sm font-medium">Create</span>
-                </Link>
-                <Link href="/saved" className="text-text-secondary hover:text-navy transition-colors flex items-center gap-1.5" title="Saved News">
-                  <Bookmark className="w-5 h-5" />
-                  <span className="hidden lg:inline text-sm font-medium">Saved</span>
-                </Link>
-                <button className="text-text-secondary hover:text-navy transition-colors">
-                  <UserCircle className="w-6 h-6" />
-                  <span className="sr-only">Profile</span>
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Mobile Navigation Bar */}
-          <div className="md:hidden border-t border-border-subtle bg-surface/95 backdrop-blur-sm overflow-x-auto py-2">
-             <div className="px-4 flex space-x-6 whitespace-nowrap">
-                <Link href="/" className="text-sm font-medium text-brand-red">Latest</Link>
-                <span className="text-sm font-medium text-text-secondary">Bihar</span>
-                <span className="text-sm font-medium text-text-secondary">Districts</span>
-                <span className="text-sm font-medium text-text-secondary">Categories</span>
-             </div>
-          </div>
-        </header>
+        <Header />
 
         <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           {children}
