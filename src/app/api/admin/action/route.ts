@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
 
-    const newStatus = action === "APPROVE" ? "PUBLISHED" : "REJECTED";
+    const newStatus = action === "APPROVE" ? "APPROVED" : "REJECTED";
 
     const updatedPost = await prisma.post.update({
       where: { id: postId },

@@ -15,7 +15,7 @@ export default async function SearchPage({
 
   // Build the dynamic where clause based on what filters are present
   const whereClause: any = {
-    status: "PUBLISHED",
+    status: "APPROVED",
   };
 
   if (query) {
