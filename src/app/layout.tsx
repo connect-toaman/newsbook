@@ -59,30 +59,18 @@ export default function RootLayout({
                 <h4 className="text-sm font-bold uppercase tracking-wider text-slate-300 mb-4">News</h4>
                 <ul className="space-y-3">
                   <li><Link href="/" className="text-sm text-slate-400 hover:text-white transition-colors">Latest</Link></li>
-                  <li><span className="text-sm text-slate-500">Bihar</span></li>
-                  <li><span className="text-sm text-slate-500">Districts</span></li>
-                  <li><span className="text-sm text-slate-500">Categories</span></li>
+                  <li><Link href="/district/bihar" className="text-sm text-slate-400 hover:text-white transition-colors">Bihar</Link></li>
+                  <li><Link href="/district/patna" className="text-sm text-slate-400 hover:text-white transition-colors">Districts</Link></li>
+                  <li><Link href="/category/politics" className="text-sm text-slate-400 hover:text-white transition-colors">Categories</Link></li>
                 </ul>
               </div>
 
               {/* Links Col 2 */}
               <div>
-                <h4 className="text-sm font-bold uppercase tracking-wider text-slate-300 mb-4">Company</h4>
-                <ul className="space-y-3">
-                  <li><span className="text-sm text-slate-500">About</span></li>
-                  <li><span className="text-sm text-slate-500">Contact</span></li>
-                  <li><span className="text-sm text-slate-500">Editorial Policy</span></li>
-                  <li><span className="text-sm text-slate-500">Corrections</span></li>
-                </ul>
-              </div>
-
-              {/* Links Col 3 */}
-              <div>
                 <h4 className="text-sm font-bold uppercase tracking-wider text-slate-300 mb-4">Contribute</h4>
                 <ul className="space-y-3">
                   <li><Link href="/create" className="text-sm text-slate-400 hover:text-white transition-colors">Submit News</Link></li>
-                  <li><span className="text-sm text-slate-500">Become a Contributor</span></li>
-                  <li><span className="text-sm text-slate-500">Verification</span></li>
+                  <li><span className="text-sm text-slate-500">Contributor Access restricted to approved journalists.</span></li>
                 </ul>
               </div>
 
