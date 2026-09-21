@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { CheckCircle, XCircle, Clock } from "lucide-react";
+import AdminActionButtons from "@/components/AdminActionButtons";
 
 export default async function AdminDashboard() {
   const session = await getSession();
@@ -61,16 +62,7 @@ export default async function AdminDashboard() {
                 </div>
               </div>
 
-              <div className="flex flex-row md:flex-col gap-3 justify-center border-t md:border-t-0 md:border-l border-border-subtle pt-4 md:pt-0 md:pl-6 min-w-[140px]">
-                {/* These buttons would typically hit an API endpoint to update status */}
-                <button className="flex-1 bg-navy hover:bg-slate-800 text-white font-medium py-2 px-4 rounded text-sm transition-colors text-center">
-                  Approve
-                </button>
-                <button className="flex-1 bg-white hover:bg-red-50 text-brand-red border border-red-200 font-medium py-2 px-4 rounded text-sm transition-colors text-center">
-                  Reject
-                </button>
-              </div>
-
+              <AdminActionButtons postId={post.id} />
             </div>
           ))
         )}
