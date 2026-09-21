@@ -7,6 +7,9 @@ export const dynamic = "force-dynamic";
 async function getPosts(): Promise<PostProps[]> {
   try {
     const posts = await prisma.post.findMany({
+      where: {
+        status: "APPROVED",
+      },
       orderBy: {
         createdAt: "desc",
       },

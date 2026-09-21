@@ -5,6 +5,9 @@ import { getSession } from '@/lib/auth';
 export async function GET() {
   try {
     const posts = await prisma.post.findMany({
+      where: {
+        status: 'APPROVED'
+      },
       orderBy: {
         createdAt: 'desc',
       },

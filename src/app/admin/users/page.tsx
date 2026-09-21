@@ -5,6 +5,8 @@ import AdminNav from "@/components/AdminNav";
 import UserRoleSelector from "@/components/UserRoleSelector";
 import { UserCircle, Shield, CheckCircle, XCircle } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminUsersDashboard() {
   const session = await getSession();
 

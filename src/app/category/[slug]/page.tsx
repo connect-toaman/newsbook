@@ -9,6 +9,7 @@ async function getPostsByCategory(category: string): Promise<PostProps[]> {
   try {
     const posts = await prisma.post.findMany({
       where: {
+        status: "APPROVED",
         category: {
           equals: category,
           mode: "insensitive"

@@ -9,6 +9,7 @@ async function getPostsByDistrict(district: string): Promise<PostProps[]> {
   try {
     const posts = await prisma.post.findMany({
       where: {
+        status: "APPROVED",
         district: {
           equals: district,
           mode: "insensitive"
