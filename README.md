@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pradeshik News Bihar
 
-## Getting Started
+![Next.js](https://img.shields.io/badge/Next.js-16+-black?style=for-the-badge&logo=next.js)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
 
-First, run the development server:
+Welcome to the **Pradeshik News Bihar** official platform. This application serves as a modern, responsive, and elegant news-sharing portal allowing local communities and citizen journalists to seamlessly share stories and updates.
 
+**CEO:** Manindra Kumar Singh
+
+## Features
+- 🚀 **Next.js App Router**: Lightning-fast server rendering and SEO optimization.
+- 💅 **Tailwind CSS**: Clean, elegant, and fully responsive UI.
+- 💾 **Prisma ORM**: Robust and type-safe database interactions.
+- 🔖 **Bookmark & Save**: Instantly save your favorite posts locally.
+- ❤️ **Optimistic Likes**: Instant user feedback for interactions.
+- 📲 **Native Share API**: Effortless article sharing on mobile and desktop.
+
+## Local Development Setup
+
+Follow these instructions to run the project locally.
+
+### 1. Install Dependencies
+Make sure you have Node.js installed, then run:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure Environment Variables
+Ensure the `.env` file is present in the root directory (you can copy `.env.example`). For local development, we use SQLite.
+```env
+DATABASE_URL="file:./dev.db"
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Initialize the Database
+Generate the Prisma client and push the schema to create the local SQLite database:
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Start the Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) with your browser to explore the platform.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 1-Click Deployment to Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Deploying Pradeshik News Bihar is incredibly straightforward using Vercel. 
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Prerequisites for Production:
+For production, you'll want to switch from SQLite to a scalable database like **Vercel Postgres** or **Neon**.
+1. Update `prisma/schema.prisma` to use Postgres:
+   ```prisma
+   datasource db {
+     provider = "postgresql"
+     url      = env("DATABASE_URL")
+   }
+   ```
+2. Commit your code to a GitHub repository.
 
-## Deploy on Vercel
+### Deployment Steps:
+1. Log in to [Vercel](https://vercel.com/) and click **Add New... > Project**.
+2. Import your GitHub repository.
+3. In the project settings, navigate to **Storage** and add a **Postgres** database to automatically populate the `DATABASE_URL` environment variable.
+4. Set the **Build Command** (Vercel automatically detects Next.js):
+   - By default, Vercel runs `npm run build`. 
+   - Add a custom install step if needed in `package.json`: `"postinstall": "prisma generate"`.
+5. Click **Deploy**! Vercel will build the application, apply the Prisma schema (you can run `npx prisma db push` against production from your local machine, or add it to the build step), and serve your site globally on an edge network.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+© 2026 Pradeshik News Bihar. All rights reserved.
