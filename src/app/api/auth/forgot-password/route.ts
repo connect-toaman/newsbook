@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import crypto from "crypto";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
@@ -39,8 +37,18 @@ export async function POST(req: Request) {
     const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
     try {
-      await resend.emails.send({
-        from: "onboarding@resend.dev", // The default Resend test address
+      // Configure Nodemailer for Gmail
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_APP_PASSWORD,
+        },
+      });
+
+      // Send the email
+      await transporter.sendMail({
+        from: `"Pradeshik News Bihar" <${process.env.GMAIL_USER}>`,
         to: user.email,
         subject: "Reset your Pradeshik News Bihar password",
         html: `
@@ -54,7 +62,7 @@ export async function POST(req: Request) {
         `,
       });
     } catch (emailError) {
-      console.error("Failed to send email via Resend:", emailError);
+      console.error("Failed to send email via Nodemailer:", emailError);
       // In development, log the URL so we can test without real emails
       console.log("DEVELOPMENT RESET URL:", resetUrl);
     }
