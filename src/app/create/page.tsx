@@ -17,6 +17,12 @@ const DISTRICTS = [
   "Chhapra", "Danapur", "Saharsa", "Hajipur", "Sasaram", "Other"
 ];
 
+const getYoutubeVideoId = (url: string) => {
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+};
+
 export default function CreateNews() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -46,6 +52,19 @@ export default function CreateNews() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+
+    if (name === "videoUrl") {
+      const videoId = getYoutubeVideoId(value);
+      if (videoId) {
+        setFormData(prev => ({ 
+          ...prev, 
+          [name]: value,
+          imageUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+        }));
+        return;
+      }
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -253,6 +272,11 @@ export default function CreateNews() {
                 placeholder="https://example.com/image.jpg"
               />
             </div>
+            {formData.imageUrl && (
+              <div className="mt-3 relative w-full h-48 bg-slate-100 rounded-lg overflow-hidden border border-border-subtle">
+                <img src={formData.imageUrl} alt="Thumbnail preview" className="w-full h-full object-cover" />
+              </div>
+            )}
           </div>
 
           <div className="pt-2">

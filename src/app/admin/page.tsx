@@ -20,6 +20,12 @@ export default async function AdminDashboard() {
     orderBy: { createdAt: "desc" },
   });
 
+  const [totalUsers, staffUsers, publishedPosts] = await Promise.all([
+    prisma.user.count(),
+    prisma.user.count({ where: { role: { in: ["CONTRIBUTOR", "ADMIN"] } } }),
+    prisma.post.count({ where: { status: "APPROVED" } }), // APPROVED is used for published
+  ]);
+
   return (
     <div className="max-w-5xl mx-auto mt-8 mb-20 px-4">
       <div className="mb-8 border-b border-border-subtle pb-6 flex justify-between items-end">
@@ -33,6 +39,25 @@ export default async function AdminDashboard() {
         </div>
         <div className="text-sm font-medium bg-blue-50 text-blue-800 px-4 py-2 rounded">
           Logged in as Admin: {session.email}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-surface border border-border-subtle p-4 rounded-xl shadow-sm text-center">
+          <div className="text-3xl font-bold text-navy">{totalUsers}</div>
+          <div className="text-xs text-text-secondary uppercase tracking-wider font-bold mt-1">Registered Users</div>
+        </div>
+        <div className="bg-surface border border-border-subtle p-4 rounded-xl shadow-sm text-center">
+          <div className="text-3xl font-bold text-navy">{pendingPosts.length}</div>
+          <div className="text-xs text-amber-600 uppercase tracking-wider font-bold mt-1">Pending News</div>
+        </div>
+        <div className="bg-surface border border-border-subtle p-4 rounded-xl shadow-sm text-center">
+          <div className="text-3xl font-bold text-navy">{publishedPosts}</div>
+          <div className="text-xs text-green-600 uppercase tracking-wider font-bold mt-1">Published News</div>
+        </div>
+        <div className="bg-surface border border-border-subtle p-4 rounded-xl shadow-sm text-center">
+          <div className="text-3xl font-bold text-navy">{staffUsers}</div>
+          <div className="text-xs text-brand-red uppercase tracking-wider font-bold mt-1">Contributors & Admins</div>
         </div>
       </div>
 

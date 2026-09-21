@@ -43,6 +43,8 @@ export default async function AdminUsersDashboard() {
               <tr>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-xs">User</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-xs">Joined</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider text-xs">Last Login</th>
+                <th className="px-6 py-4 font-bold uppercase tracking-wider text-xs">Logins</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-xs">Status</th>
                 <th className="px-6 py-4 font-bold uppercase tracking-wider text-xs">Role</th>
               </tr>
@@ -63,6 +65,12 @@ export default async function AdminUsersDashboard() {
                   </td>
                   <td className="px-6 py-4 text-text-secondary">
                     {new Date(user.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 text-text-secondary text-xs">
+                    {user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}
+                  </td>
+                  <td className="px-6 py-4 text-text-secondary font-medium text-center">
+                    {user.loginCount}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center gap-1 text-xs font-bold uppercase rounded-full ${user.isActive ? 'text-green-600' : 'text-red-600'}`}>

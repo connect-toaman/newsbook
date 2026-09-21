@@ -42,6 +42,15 @@ export async function POST(req: Request) {
       role: user.role, // "USER", "CONTRIBUTOR", or "ADMIN"
     });
 
+    // Update analytics
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        lastLogin: new Date(),
+        loginCount: { increment: 1 }
+      }
+    });
+
     return NextResponse.json(
       { message: "Signed in successfully", role: user.role },
       { status: 200 }

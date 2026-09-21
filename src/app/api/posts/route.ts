@@ -48,7 +48,7 @@ export async function POST(request: Request) {
         // Enforce the author from the securely validated session
         authorId: session.userId,
         authorName: session.email,
-        status: "PENDING"
+        status: session.role === "ADMIN" ? "APPROVED" : "PENDING"
       },
     });
 
