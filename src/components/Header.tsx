@@ -5,8 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, UserCircle, Edit, Bookmark, ChevronDown, Menu, X } from "lucide-react";
 
-const CATEGORIES = ["Politics", "Education", "Business", "Sports", "Crime", "Technology"];
-const DISTRICTS = ["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Darbhanga", "Nalanda", "Vaishali", "Saran"];
+import { CATEGORIES, BIHAR_DISTRICTS } from "@/lib/constants";
 
 export default function Header() {
   const pathname = usePathname();
@@ -81,8 +80,8 @@ export default function Header() {
               </button>
               
               {isDistrictsOpen && (
-                <div className="absolute top-14 left-0 w-48 bg-white border border-border-subtle rounded-xl shadow-lg py-2 z-50 animate-in fade-in slide-in-from-top-2">
-                  {DISTRICTS.map((district) => (
+                <div className="absolute top-14 left-0 w-48 max-h-96 overflow-y-auto bg-white border border-border-subtle rounded-xl shadow-lg py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                  {BIHAR_DISTRICTS.map((district) => (
                     <Link 
                       key={district}
                       href={`/district/${district.toLowerCase()}`}
@@ -170,8 +169,8 @@ export default function Header() {
               
               <div className="px-3 py-2">
                  <div className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Districts</div>
-                 <div className="grid grid-cols-2 gap-2">
-                    {DISTRICTS.map((d) => (
+                 <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-2">
+                    {BIHAR_DISTRICTS.map((d) => (
                        <Link key={d} href={`/district/${d.toLowerCase()}`} className="text-sm text-text-secondary hover:text-brand-red">{d}</Link>
                     ))}
                  </div>

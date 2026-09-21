@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import PostCard from "@/components/PostCard";
 import type { PostProps } from "@/components/PostCard";
+import { CATEGORIES, BIHAR_DISTRICTS } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -59,10 +60,9 @@ export default async function SearchPage({
             className="px-4 py-2 border border-border-subtle rounded focus:ring-1 focus:ring-navy outline-none bg-white min-w-[150px]"
           >
             <option value="">All Categories</option>
-            <option value="Politics">Politics</option>
-            <option value="Crime">Crime</option>
-            <option value="Education">Education</option>
-            <option value="Sports">Sports</option>
+            {CATEGORIES.map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
           </select>
           <select 
             name="district" 
@@ -70,10 +70,9 @@ export default async function SearchPage({
             className="px-4 py-2 border border-border-subtle rounded focus:ring-1 focus:ring-navy outline-none bg-white min-w-[150px]"
           >
             <option value="">All Districts</option>
-            <option value="Patna">Patna</option>
-            <option value="Gaya">Gaya</option>
-            <option value="Muzaffarpur">Muzaffarpur</option>
-            <option value="Bhagalpur">Bhagalpur</option>
+            {BIHAR_DISTRICTS.map(dist => (
+              <option key={dist} value={dist}>{dist}</option>
+            ))}
           </select>
           <button type="submit" className="bg-navy hover:bg-slate-800 text-white font-medium px-6 py-2 rounded transition-colors">
             Search

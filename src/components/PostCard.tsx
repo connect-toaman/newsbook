@@ -23,6 +23,13 @@ interface PostCardProps {
   featured?: boolean;
 }
 
+const getYoutubeVideoId = (url: string) => {
+  if (!url) return null;
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+};
+
 export default function PostCard({ post, featured = false }: PostCardProps) {
   const [likes, setLikes] = useState(post.likesCount);
   const [shares, setShares] = useState(post.sharesCount);
@@ -112,6 +119,10 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
     ? post.content.substring(0, 200) + '...' 
     : post.content;
 
+  const videoId = getYoutubeVideoId(post.videoUrl || "");
+  const isYoutube = !!videoId;
+  const isLocalVideo = !!post.videoUrl && !isYoutube;
+
   if (featured) {
     return (
       <article 
@@ -119,7 +130,24 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
         className="group relative bg-surface border-y md:border border-border-subtle md:rounded-xl overflow-hidden mb-8 md:mb-12 transition-all"
       >
         <div className="flex flex-col md:flex-row">
-          {post.imageUrl && (
+          {post.videoUrl ? (
+            <div className="w-full md:w-3/5 h-64 md:h-96 bg-black overflow-hidden relative border-b md:border-b-0 md:border-r border-border-subtle flex flex-col">
+              {isYoutube ? (
+                <iframe 
+                  src={`https://www.youtube.com/embed/${videoId}`} 
+                  title={post.title}
+                  className="w-full h-full"
+                  allowFullScreen
+                ></iframe>
+              ) : (
+                <video 
+                  src={post.videoUrl} 
+                  controls 
+                  className="w-full h-full object-contain"
+                ></video>
+              )}
+            </div>
+          ) : post.imageUrl ? (
             <div className="w-full md:w-3/5 h-64 md:h-96 bg-slate-100 overflow-hidden relative">
               <img 
                 src={post.imageUrl} 
@@ -127,7 +155,7 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
               />
             </div>
-          )}
+          ) : null}
           
           <div className={`p-6 md:p-8 flex flex-col justify-center ${post.imageUrl ? 'w-full md:w-2/5' : 'w-full'}`}>
             <div className="mb-4">
@@ -143,6 +171,17 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
             <p className="text-text-secondary leading-relaxed mb-8">
               {contentSummary}
             </p>
+
+            {isYoutube && (
+              <a 
+                href={post.videoUrl!}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-block px-4 py-2 bg-brand-red text-white text-sm font-bold rounded hover:bg-red-700 transition-colors self-start mb-6"
+              >
+                Watch on YouTube
+              </a>
+            )}
 
             <div className="mt-auto">
               <div className="flex items-center justify-between mb-4">
@@ -199,7 +238,24 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
       id={`post-${post.id}`} 
       className="group relative bg-surface border border-border-subtle rounded-xl overflow-hidden flex flex-col h-full hover:border-slate-300 transition-colors"
     >
-      {post.imageUrl && (
+      {post.videoUrl ? (
+        <div className="w-full aspect-video bg-black overflow-hidden relative border-b border-border-subtle flex flex-col">
+          {isYoutube ? (
+            <iframe 
+              src={`https://www.youtube.com/embed/${videoId}`} 
+              title={post.title}
+              className="w-full h-full"
+              allowFullScreen
+            ></iframe>
+          ) : (
+            <video 
+              src={post.videoUrl} 
+              controls 
+              className="w-full h-full object-contain"
+            ></video>
+          )}
+        </div>
+      ) : post.imageUrl ? (
         <div className="w-full h-48 bg-slate-100 overflow-hidden relative border-b border-border-subtle">
           <img 
             src={post.imageUrl} 
@@ -207,16 +263,27 @@ export default function PostCard({ post, featured = false }: PostCardProps) {
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         </div>
-      )}
+      ) : null}
       
       <div className="p-5 flex flex-col flex-1">
         <h2 className="font-serif text-xl font-bold text-navy mb-3 leading-snug line-clamp-3">
           {post.title}
         </h2>
         
-        <p className="text-text-secondary text-sm leading-relaxed mb-6 line-clamp-3">
+        <p className="text-text-secondary text-sm leading-relaxed mb-4 line-clamp-3">
           {post.content}
         </p>
+
+        {isYoutube && (
+          <a 
+            href={post.videoUrl!}
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-block px-3 py-1.5 bg-brand-red text-white text-xs font-bold rounded hover:bg-red-700 transition-colors self-start mb-4"
+          >
+            Watch on YouTube
+          </a>
+        )}
 
         <div className="mt-auto">
            <div className="flex items-center justify-between mb-4">

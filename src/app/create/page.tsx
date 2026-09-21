@@ -4,18 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, Video, AlertCircle, CheckCircle2, Image as ImageIcon, Send } from "lucide-react";
 
-const CATEGORIES = [
-  "Politics", "Crime", "Education", "Business", "Jobs", 
-  "Government", "Health", "Agriculture", "Weather", 
-  "Environment", "Technology", "Sports", "Entertainment", 
-  "Local News", "District News", "Other"
-];
-
-const DISTRICTS = [
-  "Patna", "Muzaffarpur", "Gaya", "Bhagalpur", "Darbhanga",
-  "Purnia", "Arrah", "Begusarai", "Katihar", "Munger",
-  "Chhapra", "Danapur", "Saharsa", "Hajipur", "Sasaram", "Other"
-];
+import { CATEGORIES, BIHAR_DISTRICTS } from "@/lib/constants";
 
 const getYoutubeVideoId = (url: string) => {
   const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
@@ -103,11 +92,20 @@ export default function CreateNews() {
 
     try {
       let finalVideoUrl = formData.videoUrl;
+      let finalImageUrl = formData.imageUrl;
 
       if (formData.videoType === "upload" && videoFile) {
         setUploadProgress(10);
         finalVideoUrl = await uploadToBlob(videoFile);
         setUploadProgress(100);
+      }
+
+      // Automatically generate YouTube thumbnail if none provided
+      if (!finalImageUrl && finalVideoUrl) {
+        const yId = getYoutubeVideoId(finalVideoUrl);
+        if (yId) {
+          finalImageUrl = `https://img.youtube.com/vi/${yId}/hqdefault.jpg`;
+        }
       }
 
       const response = await fetch("/api/posts", {
@@ -116,7 +114,7 @@ export default function CreateNews() {
         body: JSON.stringify({
           title: formData.title,
           content: formData.content,
-          imageUrl: formData.imageUrl,
+          imageUrl: finalImageUrl,
           videoUrl: finalVideoUrl,
           category: formData.category,
           district: formData.district,
@@ -247,7 +245,7 @@ export default function CreateNews() {
                 className="w-full px-4 py-2.5 rounded border border-border-subtle focus:ring-1 focus:ring-navy bg-white"
               >
                 <option value="" disabled>Select a district</option>
-                {DISTRICTS.map(dist => <option key={dist} value={dist}>{dist}</option>)}
+                {BIHAR_DISTRICTS.map(dist => <option key={dist} value={dist}>{dist}</option>)}
               </select>
             </div>
           </div>
