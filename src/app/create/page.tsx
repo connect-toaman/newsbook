@@ -13,10 +13,22 @@ export default function CreatePost() {
     title: "",
     content: "",
     imageUrl: "",
-    author: "Citizen Journalist / Admin",
+    author: "Citizen Journalist", // default to Citizen Journalist
+    category: "",
+    district: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  useEffect(() => {
+    const auth = localStorage.getItem("userAuth");
+    if (!auth) {
+      router.push("/login");
+    } else {
+      const user = JSON.parse(auth);
+      setFormData(prev => ({ ...prev, author: user.email }));
+    }
+  }, [router]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
