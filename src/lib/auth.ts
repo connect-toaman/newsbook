@@ -1,6 +1,7 @@
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key-for-local-dev-only";
 const encodedKey = new TextEncoder().encode(JWT_SECRET);
@@ -48,7 +49,27 @@ export async function getSession() {
   const cookieStore = await cookies();
   const session = cookieStore.get("session")?.value;
   if (!session) return null;
-  return await decrypt(session);
+  
+  const payload = await decrypt(session);
+  if (!payload) return null;
+  
+  // Refresh role and status directly from DB to prevent stale JWT roles
+  try {
+    const dbUser = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: { role: true, isActive: true }
+    });
+    
+    if (dbUser && dbUser.isActive) {
+      payload.role = dbUser.role;
+    } else {
+      return null; // User was deactivated or deleted
+    }
+  } catch (err) {
+    console.error("Failed to verify user session in DB", err);
+  }
+  
+  return payload;
 }
 
 export async function deleteSession() {

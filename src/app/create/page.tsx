@@ -40,13 +40,8 @@ export default function CreateNews() {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
-    const auth = localStorage.getItem("userAuth");
-    if (!auth) {
-      router.push("/login");
-    } else {
-      const user = JSON.parse(auth);
-      setFormData(prev => ({ ...prev, author: user.email }));
-    }
+    // Optionally we could fetch /api/auth/session here if needed,
+    // but the backend fully protects the POST route now.
   }, [router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -96,13 +91,26 @@ export default function CreateNews() {
         setUploadProgress(100);
       }
 
-      // We would hit the actual API here with the user's secure JWT cookie
-      
-      // Simulate success for now
-      setTimeout(() => {
-        setSuccess(true);
-        setIsSubmitting(false);
-      }, 1000);
+      const response = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formData.title,
+          content: formData.content,
+          imageUrl: formData.imageUrl,
+          videoUrl: finalVideoUrl,
+          category: formData.category,
+          district: formData.district,
+        })
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || "Failed to submit post");
+      }
+
+      setSuccess(true);
+      setIsSubmitting(false);
 
     } catch (err: any) {
       setError(err.message || "Failed to submit news. Please try again.");

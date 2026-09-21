@@ -35,11 +35,12 @@ export async function POST(req: Request) {
       },
     });
 
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/reset-password?token=${token}`;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+    const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
     try {
       await resend.emails.send({
-        from: "Pradeshik News <noreply@resend.dev>", // Usually you would use your own domain
+        from: "onboarding@resend.dev", // The default Resend test address
         to: user.email,
         subject: "Reset your Pradeshik News Bihar password",
         html: `

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 export async function GET() {
   try {
@@ -20,8 +21,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    // SECURITY FIX: Require authentication
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
-    const { title, content, imageUrl, author, category, district } = body;
+    const { title, content, imageUrl, category, district, videoUrl } = body;
 
     if (!title || !content) {
       return NextResponse.json(
@@ -35,9 +42,13 @@ export async function POST(request: Request) {
         title,
         content,
         imageUrl: imageUrl || null,
+        videoUrl: videoUrl || null,
         category: category || null,
         district: district || null,
-        author: author || 'Citizen Journalist / Admin',
+        // Enforce the author from the securely validated session
+        authorId: session.userId,
+        authorName: session.email,
+        status: "PENDING"
       },
     });
 
